@@ -1,41 +1,65 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useReducer, useState } from 'react'
 
 const pinkRGB = `rgb(236, 72, 153)`
 
+const initialValue ={
+  count: 0,
+  color: 'rgb(210, 210, 456)'
+}
+
+
+function countReducer(stateCounts, action){
+  switch (action.type){
+    case 'increment':{
+      return {
+        count: stateCounts.count + 1,
+        color: action.color
+      };
+    }
+    case 'decrement':{
+      return {count: stateCounts.count - 1, color: action.color};
+    }
+    case 'reset':{
+      return {count: 0, color: action.color};
+    }
+
+    default: {
+      throw Error(`Unknown action: ${action.type}`)
+    }
+  }
+}
+
 export default function Counter() {
-  const [count, setCount] = useState(0)
-  const [currentColor, setCurrentColor] = useState(pinkRGB)
 
-  useEffect(() => {
-    if (count === 0) {
-      setCurrentColor(pinkRGB)
-    }
+  const [ itemsCount, dispatch ] = useReducer(countReducer, initialValue)
 
-    if (count > 0) {
-      setCurrentColor(`rgb(52, 211, 153)`)
-    }
-
-    if (count < 0) {
-      setCurrentColor(`rgb(239, 68, 68)`)
-    }
-  }, [count])
-
+ 
   const increment = () => {
-    setCount((prevState) => prevState + 1)
+    dispatch({
+      type: 'increment',
+      color: 'rgb(52, 211, 153)'
+    })
+   
   }
 
   const decrement = () => {
-    setCount((prevState) => prevState - 1)
+    dispatch({
+      type: 'decrement',
+      color: 'rgb(239, 68, 68)'
+    })
   }
 
   const reset = () => {
-    setCount(0)
+    dispatch({
+      type: 'reset',
+      color: 'rgb(236, 72, 153)'
+    })
   }
 
   return (
     <main className="bg-black bg-opacity-90 min-h-screen flex flex-col items-center justify-center text-4xl text-pink-500">
-      <h1 className="mb-5" style={{ color: currentColor }}>
-        {count}
+      <h1 className="mb-5" style={{ color: itemsCount.color}}>
+        {itemsCount.count}
       </h1>
       <div className="flex w-1/2 justify-around">
         <button
